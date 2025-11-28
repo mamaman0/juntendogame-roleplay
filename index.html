@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uni-Life Balance</title>
+    <title>Uni-Life Balance V2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="game-container">
+    
     <div id="start-screen">
         <div class="char-select-title">キャラクター選択</div>
         <div class="char-grid">
             <div class="char-card" onclick="selectChar('char1', this)">
                 <span class="char-icon">🧑‍🎓</span>
-                <div>まじめタイプ</div>
+                <span class="char-name">まじめ</span>
                 <div class="char-bonus">知識+10</div>
             </div>
             <div class="char-card" onclick="selectChar('char2', this)">
                 <span class="char-icon">🏃</span>
-                <div>アクティブ</div>
+                <span class="char-name">アクティブ</span>
                 <div class="char-bonus">体力+10</div>
             </div>
             <div class="char-card" onclick="selectChar('char3', this)">
                 <span class="char-icon">😌</span>
-                <div>おっとり</div>
+                <span class="char-name">おっとり</span>
                 <div class="char-bonus">メンタル+10</div>
             </div>
             <div class="char-card" onclick="selectChar('char4', this)">
                 <span class="char-icon">😎</span>
-                <div>社交家</div>
+                <span class="char-name">社交家</span>
                 <div class="char-bonus">社会+10</div>
             </div>
         </div>
@@ -38,35 +39,38 @@
 
     <div class="header">
         <div class="player-info">
-            <span id="player-avatar-display" class="player-avatar">❓</span>
-            <span id="player-type-display">未選択</span>
+            <div id="player-avatar-display" class="player-avatar">👤</div>
+            <span id="player-type-display">学生</span>
         </div>
-        <div style="font-size:0.9em;color:#666">Uni-Life Balance</div>
+        <div style="font-size:0.8em;color:#888;font-weight:bold;">Uni-Life Balance</div>
     </div>
 
     <div class="status-grid">
-        <div class="stat-item"><div class="stat-label">❤️ 身体</div><div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ef5350;"></div></div></div>
-        <div class="stat-item"><div class="stat-label">🧠 メンタル</div><div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#ab47bc;"></div></div></div>
-        <div class="stat-item"><div class="stat-label">🛡️ 知識</div><div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#42a5f5;"></div></div></div>
-        <div class="stat-item"><div class="stat-label">🤝 社会</div><div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#66bb6a;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">❤️ 身体 <span>Phys</span></div><div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ef5350;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🧠 メンタル <span>Ment</span></div><div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#ab47bc;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🛡️ 知識 <span>Lit</span></div><div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#42a5f5;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🤝 社会 <span>Soc</span></div><div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#66bb6a;"></div></div></div>
     </div>
 
     <div class="scene-area">
-        <div class="opponent-area"><div id="opponent-icon" class="opponent-icon"></div></div>
+        <div class="opponent-area">
+            <div id="opponent-icon" class="opponent-icon">❓</div>
+        </div>
         <div id="year-display" class="year-label">LOADING...</div>
-        <h2 id="scene-title" class="scene-title"></h2>
+        <h2 id="scene-title" class="scene-title">読み込み中...</h2>
         <div id="scene-text" class="scene-text"></div>
     </div>
 
     <div id="choices-container" class="choices-area"></div>
-</div>
 
-<div id="feedback-modal" class="modal-overlay">
-    <div class="modal-content">
-        <div id="fb-title" class="feedback-title"></div>
-        <div id="fb-text" class="feedback-text"></div>
-        <button class="next-btn" onclick="nextScenario()">次へ ▶</button>
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="fb-title" class="feedback-title"></div>
+            <div id="fb-text" class="feedback-text"></div>
+            <button class="next-btn" onclick="nextScenario()">次へ進む</button>
+        </div>
     </div>
+
 </div>
 
 <script src="script.js"></script>

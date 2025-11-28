@@ -1,7 +1,7 @@
-// --- シナリオデータ ---
+// === シナリオデータ (全8問) ===
 const scenarios = [
   {
-    year: "1年目 春", title: "新歓コンパ", opponent: "🍺",
+    year: "1年目 春", title: "新歓コンパの洗礼", opponent: "🍺",
     text: "サークルの先輩がジョッキを持ってきた。「俺の酒が飲めないのか！一杯だけなら大丈夫だろ？」",
     choices: [
       { text: "空気を読んで飲む", effects: { physical: -20, social: +5 }, fbTitle: "⚠️ 危険信号", fbText: "「一杯だけ」が一気飲みの引き金になります。短時間の大量飲酒（ビンジ飲酒）は急性アルコール中毒のリスクがあります。" },
@@ -60,18 +60,23 @@ const scenarios = [
     year: "卒業", title: "卒業おめでとう！", opponent: "🎓", text: "4年間の大学生活が終わりました。あなたの選択の結果は…？", choices: [], isEnding: true }
 ];
 
-// --- ゲームシステム ---
+// === ゲームロジック ===
 let currentScenarioIndex = 0;
 let selectedCharData = null;
 let stats = { physical: 50, mental: 50, literacy: 50, social: 50 };
 
+// キャラクター選択処理
 function selectChar(id, element) {
+  // 全カードの選択状態解除
   document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+  // クリックしたカードを選択
   element.classList.add('selected');
+  // ボタンを有効化
   document.getElementById('start-btn').disabled = false;
   
+  // データ定義
   const charMap = {
-    'char1': { name: 'まじめタイプ', icon: '🧑‍🎓', bonus: { literacy: 10 } },
+    'char1': { name: 'まじめ', icon: '🧑‍🎓', bonus: { literacy: 10 } },
     'char2': { name: 'アクティブ', icon: '🏃', bonus: { physical: 10 } },
     'char3': { name: 'おっとり', icon: '😌', bonus: { mental: 10 } },
     'char4': { name: '社交家', icon: '😎', bonus: { social: 10 } }
@@ -79,11 +84,19 @@ function selectChar(id, element) {
   selectedCharData = charMap[id];
 }
 
+// ゲーム開始処理（ここが動かない原因だったはずです！）
 function startGame() {
   if(!selectedCharData) return;
-  for(let key in selectedCharData.bonus) stats[key] += selectedCharData.bonus[key];
   
+  // ボーナス加算
+  for(let key in selectedCharData.bonus) {
+    stats[key] += selectedCharData.bonus[key];
+  }
+  
+  // 画面切り替え（スタート画面を非表示）
   document.getElementById('start-screen').style.display = 'none';
+  
+  // プレイヤー情報更新
   document.getElementById('player-avatar-display').innerText = selectedCharData.icon;
   document.getElementById('player-type-display').innerText = selectedCharData.name;
   
@@ -91,19 +104,24 @@ function startGame() {
   loadScenario(0);
 }
 
+// シナリオ読み込み
 function loadScenario(index) {
-  if (index >= scenarios.length) return;
-  const scene = scenarios[index];
   const container = document.getElementById('choices-container');
+  container.innerHTML = ''; // クリア
+
+  if (index >= scenarios.length) return;
   
+  const scene = scenarios[index];
+  
+  // 画面更新
   document.getElementById('year-display').innerText = scene.year;
   document.getElementById('scene-title').innerText = scene.title;
   document.getElementById('scene-text').innerText = scene.text;
   
   const opponentIcon = scene.opponent || "❓";
   document.getElementById('opponent-icon').innerText = opponentIcon;
-  container.innerHTML = '';
 
+  // エンディング分岐
   if (scene.isEnding) {
     let finalMsg = "あなたの健康リテラシーは素晴らしいものでした！";
     if (stats.physical < 30) finalMsg = "健康面で少し無理をしすぎたかもしれません。";
@@ -112,6 +130,7 @@ function loadScenario(index) {
     return;
   }
 
+  // 選択肢ボタン生成
   scene.choices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'btn';
@@ -121,6 +140,7 @@ function loadScenario(index) {
   });
 }
 
+// 選択結果処理
 function makeChoice(sceneIndex, choiceIndex) {
   const choice = scenarios[sceneIndex].choices[choiceIndex];
   if (choice.effects) {
@@ -134,12 +154,14 @@ function makeChoice(sceneIndex, choiceIndex) {
   document.getElementById('feedback-modal').style.display = 'flex';
 }
 
+// 次のシナリオへ
 function nextScenario() {
   document.getElementById('feedback-modal').style.display = 'none';
   currentScenarioIndex++;
   loadScenario(currentScenarioIndex);
 }
 
+// ステータス表示更新
 function updateStatDisplay() {
   document.getElementById('bar-physical').style.width = stats.physical + '%';
   document.getElementById('bar-mental').style.width = stats.mental + '%';
