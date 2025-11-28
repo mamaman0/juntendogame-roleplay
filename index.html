@@ -1,30 +1,192 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uni-Life Balance</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Zen Maru Gothic', sans-serif;
-        background-color: #f8fafc; /* Slate 50 */
-      }
+        /* 外部ツールを使わず、ここでデザインを定義します */
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .game-container {
+            background: white;
+            width: 95%;
+            max-width: 600px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* ステータスバー */
+        .header {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-bottom: 2px solid #bbdefb;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-item {
+            font-size: 0.9em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        .progress-bar {
+            background-color: #ddd;
+            height: 10px;
+            border-radius: 5px;
+            width: 60%;
+            overflow: hidden;
+            margin-left: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: 50%; /* 初期値 */
+            transition: width 0.5s ease;
+        }
+        /* メイン画面 */
+        .scene-area {
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .year-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .scene-title {
+            font-size: 1.5em;
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+        }
+        .scene-text {
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        /* 選択肢ボタン */
+        .choices-area {
+            padding: 20px;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn {
+            background-color: #fff;
+            border: 2px solid #4a90e2;
+            color: #4a90e2;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+        /* フィードバック画面（モーダル） */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none; /* 初期は非表示 */
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .feedback-text {
+            text-align: left;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+        .next-btn {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.5.0"
-  }
-}
-</script>
 </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <div class="status-grid">
+            <div class="stat-item">
+                ❤️ 身体 <div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ff8a80;"></div></div>
+            </div>
+            <div class="stat-item">
+                🧠 メンタル <div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#b39ddb;"></div></div>
+            </div>
+            <div class="stat-item">
+                🛡️ 知識 <div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#90caf9;"></div></div>
+            </div>
+            <div class="stat-item">
+                🤝 社会 <div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#a5d6a7;"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-area">
+        <div id="year-display" class="year-label">Year 1</div>
+        <h2 id="scene-title" class="scene-title">読み込み中...</h2>
+        <div id="scene-text" class="scene-text">ゲームを開始します。</div>
+    </div>
+
+    <div id="choices-container" class="choices-area">
+        </div>
+</div>
+
+<div id="feedback-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="fb-title">結果</h3>
+        <div id="fb-text" class="feedback-text"></div>
+        <button class="next-btn" onclick="nextScenario()">次へ進む</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. ゲームデータ（設問リストより作成） ---
+    //
+    const scenarios = [
+        {
+            year: "1年目 春",
+            title: "新歓コンパの洗礼",
+            text: "サークルの新歓で先輩が盛り上がっている。「俺の酒が飲めないのか！一杯だけなら大丈夫だろ？」と強く勧められた。",
+            choices: [
+                {
+                    text: "場の空気を読んで飲む",
+                    effects: { physical: -20, social: +5 },
+                    fbTitle: "⚠️ 要注意",
