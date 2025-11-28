@@ -1,0 +1,38 @@
+body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: #f0f4f8; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #333; }
+.game-container { background: white; width: 90%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; position: relative; min-height: 600px; }
+
+/* スタート画面 */
+#start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+.char-select-title { font-size: 1.8em; margin-bottom: 30px; color: #2c3e50; }
+.char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+.char-card { border: 2px solid #eee; border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.2s; text-align: center; }
+.char-card:hover, .char-card.selected { border-color: #4a90e2; background: #e3f2fd; transform: translateY(-3px); }
+.char-icon { font-size: 3em; display: block; margin-bottom: 10px; }
+.char-bonus { font-size: 0.8em; color: #666; }
+.start-btn { background: #4caf50; color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 30px; cursor: pointer; font-weight: bold; }
+.start-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+/* メイン画面 */
+.header { background-color: #e3f2fd; padding: 10px 15px; border-bottom: 2px solid #bbdefb; display: flex; align-items: center; justify-content: space-between; }
+.player-info { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #1565c0; }
+.player-avatar { font-size: 1.5em; background: #fff; padding: 5px; border-radius: 50%; border: 2px solid #1565c0; }
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 15px; background: #f1f8ff; }
+.stat-item { font-size: 0.85em; font-weight: bold; }
+.stat-label { margin-bottom: 2px; display: flex; justify-content: space-between; }
+.progress-bar { background-color: #ddd; height: 10px; border-radius: 5px; width: 100%; overflow: hidden; }
+.progress-fill { height: 100%; width: 50%; transition: width 0.5s ease; }
+.scene-area { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.opponent-area { margin-bottom: 15px; min-height: 80px; }
+.opponent-icon { font-size: 4em; background: #fff3e0; padding: 10px; border-radius: 50%; border: 3px solid #ffb74d; animation: float 3s infinite ease-in-out; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+.year-label { color: #888; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.8em; }
+.scene-title { font-size: 1.4em; margin: 5px 0 15px 0; color: #2c3e50; }
+.scene-text { line-height: 1.8; font-size: 1.05em; text-align: left; background: #fafafa; padding: 15px; border-radius: 10px; width: 100%; box-sizing: border-box; }
+.choices-area { padding: 20px; background-color: #f9fafb; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 10px; }
+.btn { background-color: #fff; border: 2px solid #4a90e2; color: #4a90e2; padding: 15px; border-radius: 12px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: bold; }
+.btn:hover { background-color: #4a90e2; color: white; transform: translateY(-2px); }
+.modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(2px); }
+.modal-content { background: white; padding: 25px; border-radius: 15px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+.feedback-title { font-size: 1.3em; margin-bottom: 10px; font-weight: bold; }
+.feedback-text { text-align: left; margin: 15px 0; background: #f0f7ff; padding: 15px; border-radius: 8px; line-height: 1.6; font-size: 0.95em; color: #444; }
+.next-btn { background-color: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1em; font-weight: bold; cursor: pointer; }

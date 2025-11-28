@@ -1,279 +1,75 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uni-Life Balance V2</title>
-<style>
-  body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: #f0f4f8; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #333; }
-  .game-container { background: white; width: 90%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; position: relative; min-height: 600px; }
-  
-  /* ヘッダー */
-  .header { background-color: #e3f2fd; padding: 10px 15px; border-bottom: 2px solid #bbdefb; display: flex; align-items: center; justify-content: space-between; }
-  .player-info { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #1565c0; }
-  .player-avatar { font-size: 1.5em; background: #fff; padding: 5px; border-radius: 50%; border: 2px solid #1565c0; }
-  
-  /* ステータス */
-  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 15px; background: #f1f8ff; }
-  .stat-item { font-size: 0.85em; font-weight: bold; }
-  .stat-label { margin-bottom: 2px; display: block; display: flex; justify-content: space-between; }
-  .progress-bar { background-color: #ddd; height: 10px; border-radius: 5px; width: 100%; overflow: hidden; }
-  .progress-fill { height: 100%; width: 50%; transition: width 0.5s ease; }
-
-  /* キャラ選択画面 */
-  #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-  .char-select-title { font-size: 1.8em; margin-bottom: 30px; color: #2c3e50; }
-  .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-  .char-card { border: 2px solid #eee; border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .char-card:hover, .char-card.selected { border-color: #4a90e2; background: #e3f2fd; transform: translateY(-3px); }
-  .char-icon { font-size: 3em; display: block; margin-bottom: 10px; }
-  .start-btn { background: #4caf50; color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 30px; cursor: pointer; font-weight: bold; }
-
-  /* シナリオ画面 */
-  .scene-area { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .opponent-area { margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
-  .opponent-icon { font-size: 4em; background: #fff3e0; padding: 10px; border-radius: 50%; border: 3px solid #ffb74d; }
-  .year-label { color: #888; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.8em; }
-  .scene-title { font-size: 1.4em; margin: 5px 0 15px 0; color: #2c3e50; }
-  .scene-text { line-height: 1.8; font-size: 1.05em; text-align: left; background: #fafafa; padding: 15px; border-radius: 10px; width: 100%; box-sizing: border-box; }
-  
-  /* 選択肢 */
-  .choices-area { padding: 20px; background-color: #f9fafb; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 10px; }
-  .btn { background-color: #fff; border: 2px solid #4a90e2; color: #4a90e2; padding: 15px; border-radius: 12px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: bold; }
-  .btn:hover { background-color: #4a90e2; color: white; transform: translateY(-2px); }
-
-  /* モーダル */
-  .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(2px); }
-  .modal-content { background: white; padding: 25px; border-radius: 15px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
-  .feedback-title { font-size: 1.3em; margin-bottom: 10px; font-weight: bold; }
-  .feedback-text { text-align: left; margin: 15px 0; background: #f0f7ff; padding: 15px; border-radius: 8px; line-height: 1.6; font-size: 0.95em; color: #444; }
-  .next-btn { background-color: #ff9800; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1em; font-weight: bold; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uni-Life Balance</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="game-container">
-  <div id="start-screen">
-    <div class="char-select-title">キャラクター選択</div>
-    <div class="char-grid">
-      <div class="char-card" onclick="selectChar('char1', this)">
-        <span class="char-icon">🧑‍🎓</span>
-        <div>まじめタイプ</div>
-        <div style="font-size:0.8em;color:#666">知識+10</div>
-      </div>
-      <div class="char-card" onclick="selectChar('char2', this)">
-        <span class="char-icon">🏃</span>
-        <div>アクティブ</div>
-        <div style="font-size:0.8em;color:#666">体力+10</div>
-      </div>
-      <div class="char-card" onclick="selectChar('char3', this)">
-        <span class="char-icon">😌</span>
-        <div>おっとり</div>
-        <div style="font-size:0.8em;color:#666">メンタル+10</div>
-      </div>
-      <div class="char-card" onclick="selectChar('char4', this)">
-        <span class="char-icon">😎</span>
-        <div>社交家</div>
-        <div style="font-size:0.8em;color:#666">社会+10</div>
-      </div>
+    <div id="start-screen">
+        <div class="char-select-title">キャラクター選択</div>
+        <div class="char-grid">
+            <div class="char-card" onclick="selectChar('char1', this)">
+                <span class="char-icon">🧑‍🎓</span>
+                <div>まじめタイプ</div>
+                <div class="char-bonus">知識+10</div>
+            </div>
+            <div class="char-card" onclick="selectChar('char2', this)">
+                <span class="char-icon">🏃</span>
+                <div>アクティブ</div>
+                <div class="char-bonus">体力+10</div>
+            </div>
+            <div class="char-card" onclick="selectChar('char3', this)">
+                <span class="char-icon">😌</span>
+                <div>おっとり</div>
+                <div class="char-bonus">メンタル+10</div>
+            </div>
+            <div class="char-card" onclick="selectChar('char4', this)">
+                <span class="char-icon">😎</span>
+                <div>社交家</div>
+                <div class="char-bonus">社会+10</div>
+            </div>
+        </div>
+        <button id="start-btn" class="start-btn" onclick="startGame()" disabled>ゲームスタート</button>
     </div>
-    <button id="start-btn" class="start-btn" onclick="startGame()" disabled>ゲームスタート</button>
-  </div>
 
-  <div class="header">
-    <div class="player-info">
-      <span id="player-avatar-display" class="player-avatar">🧑‍🎓</span>
-      <span id="player-type-display">学生</span>
+    <div class="header">
+        <div class="player-info">
+            <span id="player-avatar-display" class="player-avatar">❓</span>
+            <span id="player-type-display">未選択</span>
+        </div>
+        <div style="font-size:0.9em;color:#666">Uni-Life Balance</div>
     </div>
-    <div style="font-size:0.9em;color:#666">Uni-Life Balance</div>
-  </div>
 
-  <div class="status-grid">
-    <div class="stat-item"><div class="stat-label">❤️ 身体 <span>Physical</span></div><div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ef5350;"></div></div></div>
-    <div class="stat-item"><div class="stat-label">🧠 メンタル <span>Mental</span></div><div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#ab47bc;"></div></div></div>
-    <div class="stat-item"><div class="stat-label">🛡️ 知識 <span>Literacy</span></div><div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#42a5f5;"></div></div></div>
-    <div class="stat-item"><div class="stat-label">🤝 社会 <span>Social</span></div><div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#66bb6a;"></div></div></div>
-  </div>
-
-  <div class="scene-area">
-    <div class="opponent-area">
-      <div id="opponent-icon" class="opponent-icon">❓</div>
+    <div class="status-grid">
+        <div class="stat-item"><div class="stat-label">❤️ 身体</div><div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ef5350;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🧠 メンタル</div><div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#ab47bc;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🛡️ 知識</div><div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#42a5f5;"></div></div></div>
+        <div class="stat-item"><div class="stat-label">🤝 社会</div><div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#66bb6a;"></div></div></div>
     </div>
-    <div id="year-display" class="year-label">LOADING...</div>
-    <h2 id="scene-title" class="scene-title"></h2>
-    <div id="scene-text" class="scene-text"></div>
-  </div>
 
-  <div id="choices-container" class="choices-area"></div>
-
-  <div id="feedback-modal" class="modal-overlay">
-    <div class="modal-content">
-      <div id="fb-title" class="feedback-title"></div>
-      <div id="fb-text" class="feedback-text"></div>
-      <button class="next-btn" onclick="nextScenario()">次へ ▶</button>
+    <div class="scene-area">
+        <div class="opponent-area"><div id="opponent-icon" class="opponent-icon"></div></div>
+        <div id="year-display" class="year-label">LOADING...</div>
+        <h2 id="scene-title" class="scene-title"></h2>
+        <div id="scene-text" class="scene-text"></div>
     </div>
-  </div>
+
+    <div id="choices-container" class="choices-area"></div>
 </div>
 
-<script>
-// --- 1. シナリオデータ (8問に増量) ---
-const scenarios = [
-  {
-    year: "1年目 春", title: "新歓コンパ", opponent: "🍺",
-    text: "サークルの先輩がジョッキを持ってきた。「俺の酒が飲めないのか！一杯だけなら大丈夫だろ？」",
-    choices: [
-      { text: "空気を読んで飲む", effects: { physical: -20, social: +5 }, fbTitle: "⚠️ 危険信号", fbText: "「一杯だけ」が一気飲みの引き金になります。短時間の大量飲酒（ビンジ飲酒）は急性アルコール中毒のリスクがあります。" },
-      { text: "「体質的に飲めません」", effects: { physical: +10, literacy: +10, social: +5 }, fbTitle: "✅ ナイス判断！", fbText: "アルコールパッチテスト等で自分の体質を知っておくことは大切です。強要はアルハラ（ハラスメント）です。" }
-    ]
-  },
-  {
-    year: "1年目 夏", title: "予期せぬ展開", opponent: "😍",
-    text: "恋人といい雰囲気に。でもコンドームがない。「外に出せば大丈夫だよ」と相手は言っている。",
-    choices: [
-      [cite_start]{ text: "信じて受け入れる", effects: { physical: -30, literacy: -20 }, fbTitle: "❌ ストップ！", fbText: "外出し（膣外射精）は避妊効果が低く、性感染症は全く防げません。ピルも性感染症は予防できません [cite: 79, 76]。" },
-      [cite_start]{ text: "「今日はやめておこう」", effects: { physical: +10, literacy: +20, social: +10 }, fbTitle: "✅ 素晴らしい", fbText: "同意はいつでも撤回可能です。避妊具がない場合、性行為をしない選択は尊重されるべきです [cite: 20]。" }
-    ]
-  },
-  {
-    year: "2年目 春", title: "怪しい誘い", opponent: "😈",
-    text: "友人の知人から「合法ハーブ」を勧められた。「リラックスできるし、合法だから捕まらないよ」",
-    choices: [
-      { text: "1回だけなら…", effects: { physical: -40, mental: -20, literacy: -30 }, fbTitle: "⛔ 非常に危険", fbText: "「合法」と称していても成分不明で、呼吸停止や錯乱など重篤な健康被害が多発しています。1回でも依存のリスクがあります。" },
-      { text: "きっぱり断る", effects: { physical: +10, literacy: +20, social: +5 }, fbTitle: "✅ 正解です", fbText: "成分や濃度が不明な薬物は非常に危険です。断る勇気が自分と未来を守ります。" }
-    ]
-  },
-  {
-    year: "2年目 秋", title: "検査の提案", opponent: "🏥",
-    text: "新しいパートナーができた。「付き合う前に、お互いのために性感染症の検査に行かない？」と提案された。",
-    choices: [
-      [cite_start]{ text: "「信頼してないの？」と怒る", effects: { social: -20, literacy: -10 }, fbTitle: "🤔 誤解です", fbText: "検査の提案は信頼していないからではありません。無症状の感染も多いため、お互いの健康を守るための愛情ある行動です [cite: 28]。" },
-      { text: "一緒に検査に行く", effects: { social: +20, literacy: +20, physical: +10 }, fbTitle: "✅ 理想的な関係", fbText: "カップルで検査を受けることは、感染リスクを下げ、安心して関係を築くための最良のステップです。" }
-    ]
-  },
-  {
-    year: "3年目 春", title: "試験前のサプリ", opponent: "💊",
-    text: "試験勉強で眠い。SNSで『集中力が爆上がりする海外製サプリ』が話題だ。",
-    choices: [
-      { text: "ネットで購入", effects: { physical: -20, mental: -10 }, fbTitle: "⚠️ リスクあり", fbText: "スマートドラッグ等の成分不明品は副作用や依存の危険があります。安易な個人輸入は避けましょう。" },
-      [cite_start]{ text: "睡眠をとる", effects: { physical: +10, mental: +10 }, fbTitle: "✅ 正解です", fbText: "睡眠不足は記憶の定着を妨げます。十分な睡眠こそが最高のパフォーマンスを引き出します [cite: 24]。" }
-    ]
-  },
-  {
-    year: "3年目 冬", title: "メンタルの不調", opponent: "☁️",
-    text: "就活がつらい。眠れず、食欲もない。「誰かに相談したいけど迷惑かな…」",
-    choices: [
-      [cite_start]{ text: "一人で耐える", effects: { mental: -30, physical: -10 }, fbTitle: "🤕 無理しないで", fbText: "「つらい」と言うのは弱さではありません。我慢しすぎると回復に時間がかかります。早期相談が重要です [cite: 62]。" },
-      { text: "相談室に行く", effects: { mental: +30, social: +10 }, fbTitle: "✅ その通り", fbText: "大学や保健所には守秘義務のある専門家がいます。プロを頼ることは立派なスキルです。" }
-    ]
-  },
-  {
-    year: "4年目 春", title: "ワクチンの噂", opponent: "📱",
-    text: "SNSで「HPVワクチンは危険、不妊になる」という投稿が拡散されている。",
-    choices: [
-      [cite_start]{ text: "友達に拡散する", effects: { literacy: -30 }, fbTitle: "❌ 誤情報です", fbText: "「不妊になる」等の主張に科学的根拠はありません。誤情報を拡散しないよう、公的機関（厚労省等）を確認しましょう [cite: 82]。" },
-      [cite_start]{ text: "公的情報を確認", effects: { literacy: +30 }, fbTitle: "✅ 素晴らしい", fbText: "不安な時こそエビデンスを確認しましょう。HPVワクチンは子宮頸がん予防に有効で、安全性も確認されています [cite: 87]。" }
-    ]
-  },
-  {
-    year: "卒業", title: "卒業おめでとう！", opponent: "🎓", text: "4年間の大学生活が終わりました。あなたの選択の結果は…？", choices: [], isEnding: true }
-];
+<div id="feedback-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div id="fb-title" class="feedback-title"></div>
+        <div id="fb-text" class="feedback-text"></div>
+        <button class="next-btn" onclick="nextScenario()">次へ ▶</button>
+    </div>
+</div>
 
-// --- 2. ゲームロジック ---
-let currentScenarioIndex = 0;
-let selectedCharData = null;
-let stats = { physical: 50, mental: 50, literacy: 50, social: 50 };
+<script src="script.js"></script>
 
-function selectChar(id, element) {
-  // 選択状態の見た目変更
-  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-  element.classList.add('selected');
-  document.getElementById('start-btn').disabled = false;
-  
-  // キャラデータの保存
-  const charMap = {
-    'char1': { name: 'まじめタイプ', icon: '🧑‍🎓', bonus: { literacy: 10 } },
-    'char2': { name: 'アクティブ', icon: '🏃', bonus: { physical: 10 } },
-    'char3': { name: 'おっとり', icon: '😌', bonus: { mental: 10 } },
-    'char4': { name: '社交家', icon: '😎', bonus: { social: 10 } }
-  };
-  selectedCharData = charMap[id];
-}
-
-function startGame() {
-  if(!selectedCharData) return;
-  
-  // ボーナス反映
-  for(let key in selectedCharData.bonus) {
-    stats[key] += selectedCharData.bonus[key];
-  }
-  
-  // 画面切り替え
-  document.getElementById('start-screen').style.display = 'none';
-  document.getElementById('player-avatar-display').innerText = selectedCharData.icon;
-  document.getElementById('player-type-display').innerText = selectedCharData.name;
-  
-  updateStatDisplay();
-  loadScenario(0);
-}
-
-function loadScenario(index) {
-  if (index >= scenarios.length) return;
-  const scene = scenarios[index];
-  const container = document.getElementById('choices-container');
-  
-  document.getElementById('year-display').innerText = scene.year;
-  document.getElementById('scene-title').innerText = scene.title;
-  document.getElementById('scene-text').innerText = scene.text;
-  
-  // 相手アイコンの更新
-  const opponentIcon = scene.opponent || "❓"; // デフォルト
-  document.getElementById('opponent-icon').innerText = opponentIcon;
-
-  container.innerHTML = '';
-
-  if (scene.isEnding) {
-    let finalMsg = "あなたの健康リテラシーは素晴らしいものでした！";
-    if (stats.physical < 30) finalMsg = "健康面で少し無理をしすぎたかもしれません。";
-    if (stats.literacy > 80) finalMsg = "ファクトチェックの達人になれました！";
-    container.innerHTML = `<div style="padding:20px;background:#e3f2fd;border-radius:10px;"><strong>成績表:</strong><br>${finalMsg}<br><br><button class="btn" onclick="location.reload()">もう一度遊ぶ</button></div>`;
-    return;
-  }
-
-  scene.choices.forEach((choice, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.innerText = choice.text;
-    btn.onclick = () => makeChoice(index, i);
-    container.appendChild(btn);
-  });
-}
-
-function makeChoice(sceneIndex, choiceIndex) {
-  const choice = scenarios[sceneIndex].choices[choiceIndex];
-  if (choice.effects) {
-    for (let key in choice.effects) {
-      stats[key] = Math.max(0, Math.min(100, stats[key] + choice.effects[key]));
-    }
-  }
-  updateStatDisplay();
-  document.getElementById('fb-title').innerText = choice.fbTitle;
-  document.getElementById('fb-text').innerText = choice.fbText;
-  document.getElementById('feedback-modal').style.display = 'flex';
-}
-
-function nextScenario() {
-  document.getElementById('feedback-modal').style.display = 'none';
-  currentScenarioIndex++;
-  loadScenario(currentScenarioIndex);
-}
-
-function updateStatDisplay() {
-  document.getElementById('bar-physical').style.width = stats.physical + '%';
-  document.getElementById('bar-mental').style.width = stats.mental + '%';
-  document.getElementById('bar-literacy').style.width = stats.literacy + '%';
-  document.getElementById('bar-social').style.width = stats.social + '%';
-}
-</script>
 </body>
 </html>
