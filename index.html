@@ -1,192 +1,170 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uni-Life Balance</title>
-    <style>
-        /* 外部ツールを使わず、ここでデザインを定義します */
-        body {
-            font-family: "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
-        }
-        .game-container {
-            background: white;
-            width: 95%;
-            max-width: 600px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        /* ステータスバー */
-        .header {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-bottom: 2px solid #bbdefb;
-        }
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .stat-item {
-            font-size: 0.9em;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-        .progress-bar {
-            background-color: #ddd;
-            height: 10px;
-            border-radius: 5px;
-            width: 60%;
-            overflow: hidden;
-            margin-left: 5px;
-        }
-        .progress-fill {
-            height: 100%;
-            background-color: #4caf50;
-            width: 50%; /* 初期値 */
-            transition: width 0.5s ease;
-        }
-        /* メイン画面 */
-        .scene-area {
-            padding: 20px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .year-label {
-            color: #888;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-        .scene-title {
-            font-size: 1.5em;
-            margin: 0 0 15px 0;
-            color: #2c3e50;
-        }
-        .scene-text {
-            line-height: 1.6;
-            font-size: 1.1em;
-        }
-        /* 選択肢ボタン */
-        .choices-area {
-            padding: 20px;
-            background-color: #fafafa;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .btn {
-            background-color: #fff;
-            border: 2px solid #4a90e2;
-            color: #4a90e2;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background-color: #4a90e2;
-            color: white;
-        }
-        /* フィードバック画面（モーダル） */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none; /* 初期は非表示 */
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 85%;
-            max-width: 500px;
-            text-align: center;
-        }
-        .feedback-text {
-            text-align: left;
-            margin: 20px 0;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            line-height: 1.6;
-        }
-        .next-btn {
-            background-color: #ff9800;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uni-Life Balance</title>
+<style>
+  body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: #f0f4f8; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #333; }
+  .game-container { background: white; width: 90%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .header { background-color: #e3f2fd; padding: 15px; border-bottom: 2px solid #bbdefb; }
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .stat-item { font-size: 0.9em; font-weight: bold; }
+  .stat-label { margin-bottom: 4px; display: block; }
+  .progress-bar { background-color: #eee; height: 12px; border-radius: 6px; width: 100%; overflow: hidden; }
+  .progress-fill { height: 100%; width: 50%; transition: width 0.5s ease; }
+  .scene-area { padding: 30px 20px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+  .year-label { color: #888; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; font-size: 0.85em; }
+  .scene-title { font-size: 1.6em; margin: 0 0 15px 0; color: #2c3e50; }
+  .scene-text { line-height: 1.8; font-size: 1.1em; }
+  .choices-area { padding: 20px; background-color: #f9fafb; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 12px; }
+  .btn { background-color: #fff; border: 2px solid #4a90e2; color: #4a90e2; padding: 18px; border-radius: 12px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: bold; }
+  .btn:hover { background-color: #4a90e2; color: white; transform: translateY(-2px); }
+  .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(2px); }
+  .modal-content { background: white; padding: 30px; border-radius: 15px; width: 80%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .feedback-title { font-size: 1.4em; margin-bottom: 15px; font-weight: bold; }
+  .feedback-text { text-align: left; margin: 15px 0 25px 0; background: #f0f7ff; padding: 15px; border-radius: 8px; line-height: 1.6; font-size: 0.95em; color: #444; }
+  .next-btn { background-color: #ff9800; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
+</style>
 </head>
 <body>
-
 <div class="game-container">
-    <div class="header">
-        <div class="status-grid">
-            <div class="stat-item">
-                ❤️ 身体 <div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ff8a80;"></div></div>
-            </div>
-            <div class="stat-item">
-                🧠 メンタル <div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#b39ddb;"></div></div>
-            </div>
-            <div class="stat-item">
-                🛡️ 知識 <div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#90caf9;"></div></div>
-            </div>
-            <div class="stat-item">
-                🤝 社会 <div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#a5d6a7;"></div></div>
-            </div>
-        </div>
+  <div class="header">
+    <div class="status-grid">
+      <div class="stat-item"><span class="stat-label">❤️ 身体</span><div class="progress-bar"><div id="bar-physical" class="progress-fill" style="background:#ef5350;"></div></div></div>
+      <div class="stat-item"><span class="stat-label">🧠 メンタル</span><div class="progress-bar"><div id="bar-mental" class="progress-fill" style="background:#ab47bc;"></div></div></div>
+      <div class="stat-item"><span class="stat-label">🛡️ 知識</span><div class="progress-bar"><div id="bar-literacy" class="progress-fill" style="background:#42a5f5;"></div></div></div>
+      <div class="stat-item"><span class="stat-label">🤝 社会</span><div class="progress-bar"><div id="bar-social" class="progress-fill" style="background:#66bb6a;"></div></div></div>
     </div>
-
-    <div class="scene-area">
-        <div id="year-display" class="year-label">Year 1</div>
-        <h2 id="scene-title" class="scene-title">読み込み中...</h2>
-        <div id="scene-text" class="scene-text">ゲームを開始します。</div>
-    </div>
-
-    <div id="choices-container" class="choices-area">
-        </div>
-</div>
-
-<div id="feedback-modal" class="modal-overlay">
+  </div>
+  <div class="scene-area">
+    <div id="year-display" class="year-label">LOADING...</div>
+    <h2 id="scene-title" class="scene-title">読み込み中...</h2>
+    <div id="scene-text" class="scene-text"></div>
+  </div>
+  <div id="choices-container" class="choices-area"></div>
+  <div id="feedback-modal" class="modal-overlay">
     <div class="modal-content">
-        <h3 id="fb-title">結果</h3>
-        <div id="fb-text" class="feedback-text"></div>
-        <button class="next-btn" onclick="nextScenario()">次へ進む</button>
+      <div id="fb-title" class="feedback-title"></div>
+      <div id="fb-text" class="feedback-text"></div>
+      <button class="next-btn" onclick="nextScenario()">次へ ▶</button>
     </div>
+  </div>
 </div>
 
 <script>
-    // --- 1. ゲームデータ（設問リストより作成） ---
-    //
-    const scenarios = [
-        {
-            year: "1年目 春",
-            title: "新歓コンパの洗礼",
-            text: "サークルの新歓で先輩が盛り上がっている。「俺の酒が飲めないのか！一杯だけなら大丈夫だろ？」と強く勧められた。",
-            choices: [
-                {
-                    text: "場の空気を読んで飲む",
-                    effects: { physical: -20, social: +5 },
-                    fbTitle: "⚠️ 要注意",
+const scenarios = [
+  {
+    year: "1年目 春",
+    title: "新歓コンパの洗礼",
+    text: "サークルの新歓で先輩が盛り上がっている。「俺の酒が飲めないのか！一杯だけなら大丈夫だろ？」と強く勧められた。",
+    choices: [
+      { text: "場の空気を読んで飲む", effects: { physical: -20, social: +5 }, fbTitle: "⚠️ 要注意", fbText: "「一杯だけ」が一気飲みの引き金になります。短時間の大量飲酒（ビンジ飲酒）は急性アルコール中毒のリスクがあります。" },
+      { text: "「体質的に飲めません」と断る", effects: { physical: +10, literacy: +10, social: +5 }, fbTitle: "✅ ナイス判断！", fbText: "素晴らしいです。アルコールパッチテスト等で自分の体質を知っておくことは大切です。強要はハラスメントにあたります。" }
+    ]
+  },
+  {
+    year: "1年目 夏",
+    title: "初めての夜",
+    text: "パートナーといい雰囲気に。しかし、コンドームを持っていないことに気づいた。相手は「外に出せば大丈夫だよ」と言っている。",
+    choices: [
+      { text: "相手を信じて受け入れる", effects: { physical: -30, literacy: -20, social: +5 }, fbTitle: "❌ ストップ！", fbText: "外出し（膣外射精）は避妊効果が低く、性感染症は全く防げません。ピルも性感染症は予防できません。" },
+      { text: "「今日はやめておこう」と断る", effects: { physical: +10, literacy: +20, social: +10 }, fbTitle: "✅ 素晴らしい選択", fbText: "同意（コンセント）はいつでも撤回可能です。避妊具がない場合、性行為をしないという選択は尊重されるべきです。" }
+    ]
+  },
+  {
+    year: "2年目 秋",
+    title: "試験前の誘惑",
+    text: "明日は大事なテストだが眠い。SNSで『集中力が爆上がりする海外サプリ』が話題になっている。",
+    choices: [
+      { text: "ネットで購入して飲む", effects: { physical: -20, mental: -10, literacy: -30 }, fbTitle: "⚠️ 危険です", fbText: "成分不明のサプリや『スマートドラッグ』には健康被害や依存のリスクがあります。公的情報を確認しましょう。" },
+      { text: "今日は早く寝て朝やる", effects: { physical: +10, mental: +10, literacy: +10 }, fbTitle: "✅ 正解です", fbText: "睡眠不足は記憶の定着を妨げます。十分な睡眠をとる方がパフォーマンスは向上します。" }
+    ]
+  },
+  {
+    year: "3年目 冬",
+    title: "メンタルの不調",
+    text: "就活と実習が重なり眠れない日が続いている。「誰かに相談したいけど、迷惑かな…」と考えてしまう。",
+    choices: [
+      { text: "一人で耐える", effects: { physical: -10, mental: -30 }, fbTitle: "🤔 無理は禁物", fbText: "「つらい」と声を上げることは弱さではありません。我慢しすぎると回復に時間がかかります。" },
+      { text: "大学の相談室や友人に話す", effects: { mental: +30, social: +10, literacy: +10 }, fbTitle: "✅ その通り", fbText: "早期の相談は悪化予防につながります。専門機関への相談が推奨されます。" }
+    ]
+  },
+  {
+    year: "4年目 春",
+    title: "ワクチンの噂",
+    text: "「HPVワクチンは不妊の原因になる」という投稿がSNSで拡散されている。友人が不安そうにしている。",
+    choices: [
+      { text: "「怖いから打たない方がいいよ」と言う", effects: { literacy: -30, physical: -10 }, fbTitle: "❌ 誤情報です", fbText: "「ワクチンが不妊の原因になる」という科学的根拠はありません。誤情報の拡散に加担しないようにしましょう。" },
+      { text: "公的機関のサイトを一緒に見る", effects: { literacy: +30, social: +10 }, fbTitle: "✅ 素晴らしいリテラシー", fbText: "不安な時こそ、エビデンス（科学的根拠）を確認することが重要です。HPVワクチンは子宮頸がん等の予防に有効です。" }
+    ]
+  },
+  {
+    year: "卒業", title: "卒業おめでとう！", text: "4年間の大学生活が終わりました。あなたの選択の結果は…？", choices: [], isEnding: true
+  }
+];
+
+let currentScenarioIndex = 0;
+let stats = { physical: 50, mental: 50, literacy: 50, social: 50 };
+
+function initGame() {
+  updateStatDisplay();
+  loadScenario(0);
+}
+
+function loadScenario(index) {
+  if (index >= scenarios.length) return;
+  const scene = scenarios[index];
+  const container = document.getElementById('choices-container');
+  document.getElementById('year-display').innerText = scene.year;
+  document.getElementById('scene-title').innerText = scene.title;
+  document.getElementById('scene-text').innerText = scene.text;
+  container.innerHTML = '';
+
+  if (scene.isEnding) {
+    let finalMsg = "あなたの健康リテラシーは素晴らしいものでした！";
+    if (stats.physical < 30) finalMsg = "健康面で少し無理をしすぎたかもしれません。";
+    if (stats.literacy > 80) finalMsg = "ファクトチェックの達人になれました！";
+    container.innerHTML = `<div style="padding:20px;background:#e3f2fd;border-radius:10px;"><strong>成績表:</strong><br>${finalMsg}<br><br><button class="btn" onclick="location.reload()">もう一度遊ぶ</button></div>`;
+    return;
+  }
+
+  scene.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.innerText = choice.text;
+    btn.onclick = () => makeChoice(index, i);
+    container.appendChild(btn);
+  });
+}
+
+function makeChoice(sceneIndex, choiceIndex) {
+  const choice = scenarios[sceneIndex].choices[choiceIndex];
+  if (choice.effects) {
+    for (let key in choice.effects) {
+      stats[key] = Math.max(0, Math.min(100, stats[key] + choice.effects[key]));
+    }
+  }
+  updateStatDisplay();
+  document.getElementById('fb-title').innerText = choice.fbTitle;
+  document.getElementById('fb-text').innerText = choice.fbText;
+  document.getElementById('feedback-modal').style.display = 'flex';
+}
+
+function nextScenario() {
+  document.getElementById('feedback-modal').style.display = 'none';
+  currentScenarioIndex++;
+  loadScenario(currentScenarioIndex);
+}
+
+function updateStatDisplay() {
+  document.getElementById('bar-physical').style.width = stats.physical + '%';
+  document.getElementById('bar-mental').style.width = stats.mental + '%';
+  document.getElementById('bar-literacy').style.width = stats.literacy + '%';
+  document.getElementById('bar-social').style.width = stats.social + '%';
+}
+
+initGame();
+</script>
+</body>
+</html>
